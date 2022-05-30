@@ -1,0 +1,2 @@
+echo.
+goto eof

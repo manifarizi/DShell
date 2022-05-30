@@ -1,0 +1,171 @@
+#.PGo.start{}
+framego.ttl{DShell}
+//find the __date__
+cmd.date /t{} | for /f "tokens=* delims=" %%3 in ('more') do @(pgo.var{"date=%%3"})
+#"
+//the first prompt
+cmd.set{"Clock=%time:~0_c_-6%"}
+pgo.var {"label=echo."}
+pgo.print -s{"╭─"} -f{1}
+pgo.print -s{"[DShell]"} -f{4}
+pgo.print -s{"─[__CD__]"} -f{3}
+pgo.print -s{"─[__clock__]"} -f{6}_n_
+pgo.print -s {"├──[者 10 Enterprise]─[ 🟣"} -f{1}
+pgo.print -s {"]─[__date__]"} -f{2}
+framego.go{dsloop}
+//Creating a frame called main for loop
+pgo.frame/main {
+    @echo off
+    //this part, print the prompt with color
+    cmd.set{"Clock=%time:~0_c_-6%"}
+    pgo.var {"label=echo."}
+    pgo.print -s{"╭─"} -f{1}
+    pgo.print -s{"[DShell]"} -f 4
+    pgo.print -s{"─[__CD__]"} -f{3}
+    pgo.print -s{"─[__clock__]"} -f{6}
+
+    //this part is for commands if a frame exist with name of label variable the program runs it if not(else) the command from label variable run in cmd
+    pgo.frame/dsloop {
+        echo.
+        pgo.print -s{"╰───"} -f{1}
+        pgo.print -s{"λ "} -f{5}
+        pgo.in{"label="}
+        (call )
+        cmd.call :__label__ 2>nul || (call :cmdrun) 
+        @echo off
+        pgo.var {"label=echo."}
+        }
+    }
+//this is the frame that runs
+//disabling goto
+pgo.frame/goto{
+    print -s{"Goto is disabled"} -f{4}
+    echo.
+    framego.go{main}
+}
+//disabling cmd
+pgo.frame/cmd{
+    print -s{"CMD is disabled"} -f{4}
+    echo.
+    framego.go{main}
+}
+
+
+//Ghelp
+pgo.frame/Ghelp{
+    pgo.print -s{"Rand............Random Number Generator"} _n_
+    pgo.print -s{"Calc............Calculator"} _n_
+    pgo.print -s{"Mode PS..............Powershell mode"} _n_
+    pgo.print -s{"Mode Bash............bash mode(WSl needed)"} _n_
+    framego.go{main}
+}
+//bash
+pgo.frame/bash{
+    echo.
+    print -s{"bash mode has been activated"} -f{2} _n_
+    pgo.frame/bashlloop {
+        pgo.var{"Clock=%time:~0_c_-6%"}
+        pgo.var {"label=echo """}
+        pgo.print -s{"╭─"} -f{1}
+        pgo.print -s{"[bash]"} -f 4
+        pgo.print -s{"─[__CD__]"} -f{3}
+        pgo.print -s{"─[__clock__]"} -f{6}_n_
+        pgo.print -s{"╰───"} -f{1}
+        pgo.print -s{"λ "} -f{5}
+        pgo.in{"label="}
+
+        @echo on
+        @bash __label__ 2>errorEE.txt
+        @echo off
+        if ["__label__"]==["exit"] echo. & framego.go{main}
+            cmd.type errorEE.txt | for /f "tokens=* delims=" %%3 in ('more') do @(pgo.print -s{"  %%3  "} -f 4 _n_)
+            #"
+        framego.go{bashlloop}
+}
+}
+//runs the cmd command
+pgo.frame/cmdrun{
+    @echo on
+    @call __label__ 2>errorEE.txt
+    @echo off
+    cmd.type errorEE.txt
+    #"
+    framego.go{main}
+}
+
+//powershell mode
+pgo.frame/mode powershell {
+    echo.
+    print -s{"powershell mode has been activated"} -f{2} _n_
+    pgo.frame/powershellloop {
+        pgo.var{"Clock=%time:~0_c_-6%"}
+        pgo.var {"label=echo """}
+        pgo.print -s{"╭─"} -f{1}
+        pgo.print -s{"[Powershell]"} -f 4
+        pgo.print -s{"─[__CD__]"} -f{3}
+        pgo.print -s{"─[__clock__]"} -f{6}_n_
+        pgo.print -s{"╰───"} -f{1}
+        pgo.print -s{"λ "} -f{5}
+        pgo.in{"label="}
+
+        @echo on
+        @powershell __label__ 2>errorEE.txt
+        @echo off
+        if ["__label__"]==["exit"] echo. & framego.go{main}
+        cmd.type errorEE.txt | for /f "tokens=* delims=" %%3 in ('more') do @(pgo.print -s{"  %%3  "} -f 4 _n_)
+        #"
+        framego.go{powershellloop}
+}
+}
+
+pgo.frame/math{
+    echo.
+    print -s{"math mode has been activated"} -f{2} _n_
+    pgo.frame/mathloop {
+        pgo.var{"Clock=%time:~0_c_-6%"}
+        pgo.var {"label=0"}
+        pgo.print -s{"╭─"} -f{1}
+        pgo.print -s{"[math]"} -f 4
+        pgo.print -s{"─[__clock__]"} -f{6}_n_
+        pgo.print -s{"╰───"} -f{1}
+        pgo.print -s{"λ "} -f{5}
+        pgo.in{"label="}
+        if ["__label__"]==["exit"] echo. & framego.go{main}
+        pgo.calc{Answer=__label__}
+        echo %Answer%
+        cmd.type errorEE.txt | for /f "tokens=* delims=" %%3 in ('more') do @(pgo.print -s{"  %%3  "} -f 4 _n_)
+        #"
+    framego.go{mathloop}
+    }
+}
+
+
+pgo.frame/rand{
+    echo.
+    print -s{"rand mode has been activated"} -f{2} _n_
+    pgo.frame/randloop {
+        pgo.var{"Clock=%time:~0_c_-6%"}
+        pgo.var {"label=0"}
+        pgo.print -s{"╭─"} -f{1}
+        pgo.print -s{"[Min]"} -f 4
+        pgo.print -s{"─[__clock__]"} -f{6}_n_
+        pgo.print -s{"╰───"} -f{1}
+        pgo.print -s{"λ "} -f{5}
+        pgo.in{"randmin="}
+        if ["__randmin__"]==["exit"] echo. & framego.go{main}
+        pgo.var{"Clock=%time:~0_c_-6%"}
+        pgo.var {"label=0"}
+        pgo.print -s{"╭─"} -f{1}
+        pgo.print -s{"[Max]"} -f 4
+        pgo.print -s{"─[__clock__]"} -f{6}_n_
+        pgo.print -s{"╰───"} -f{1}
+        pgo.print -s{"λ "} -f{5}
+        pgo.in{"randmax="}
+        if ["__randmax__"]==["exit"] echo. & framego.go{main}
+        pgo.calc{_rand=(%RANDOM%*(%randmax%-%randmin%+1)/32768)+%randmin%}
+        pgo.print -s{___rand__} _n_
+        #"
+    framego.go{randloop}
+    }
+}
+
